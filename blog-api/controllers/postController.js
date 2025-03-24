@@ -13,11 +13,46 @@ exports.createPost = async (req, res, next) => {
   }
 };
 
-// Get all posts
+// Get all posts(with pagination, search, category & tags)
 exports.getPosts = async (req, res, next) => {
   try {
-    const posts = await Post.find(); 
-    res.status(200).json(posts);
+    const { page = 1, limit = 10, search = '', category, tags } = req.query;
+
+    const query = {};
+
+    // search by title or content
+    if (search) {
+      query.$or = [
+        { tittle: { $regex: search, $options: 'i' } },
+        { content: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    // filter by category
+    if (category) {
+      query.category = category;
+    }
+
+    // filter by tags (comma-separated)
+    if (tags) {
+      const tagsArray = tags.split('.');
+      query.tags = { $in: tagsArray };
+    }
+     // Pagination & Sorting
+    const posts = await Post.find(query)
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit))
+      .sort({ createdAt: -1 });
+
+    const totalPosts = await Post.countDocuments(query);
+
+    res.status(200).json({
+      total: totalPosts,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      posts,
+    });
+
   } catch (err) {
     next(err);
   }
@@ -46,9 +81,12 @@ exports.updatePost = async (req, res, next) => {
     }
     post.tittle = req.body.title || post.tittle;
     post.content = req.body.content || post.content;
-    await post.save();
+    post.category = req.body.category || post.category;
+    post.tags = req.body.tags || post.tags;
 
+    await post.save();
     res.status(200).json(post);
+    
   } catch (err) {
     next(err);
   }
