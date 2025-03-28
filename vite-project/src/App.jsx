@@ -1,11 +1,18 @@
-import PostList from "./components/PostList"; // Ensure the file path is correct
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import PostList from "./components/PostList"; 
+import SinglePost from "./components/SinglePost";
 
 function App() {
   return (
-    <div>
-      <h1>My Blog</h1>
-      <PostList /> {/* This will render the list of posts */}
-    </div>
+    <Router>
+      <div>
+        <h1>My Blog</h1>
+        <Routes>
+          <Route path="/" element={<PostList />} />
+          <Route path="/post/:id" element={<SinglePost />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
