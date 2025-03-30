@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-const API_URL = "https:////localhost:5000/api/posts";
+const API_URL = "http://localhost:5000/api/posts"; // ✅ Corrected URL
 
-function postList () {
+function PostList() {
+  // ✅ Capitalized component name
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("null");
+  const [error, setError] = useState(null); // ✅ Fixed initial state
 
   useEffect(() => {
     axios
@@ -17,7 +18,7 @@ function postList () {
         setLoading(false);
       })
       .catch((error) => {
-        setError("Failed to load post");
+        setError("Failed to load posts");
         setLoading(false);
       });
   }, []);
@@ -26,8 +27,11 @@ function postList () {
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="max-w-3x1 mx-auto p-4">
-      <h2 className="text-2x1 font-bold mb-4">All Posts</h2>
+    <div className="max-w-3xl mx-auto p-4">
+      {" "}
+      {/* ✅ Fixed Tailwind class */}
+      <h2 className="text-2xl font-bold mb-4">All Posts</h2>{" "}
+      {/* ✅ Fixed text size */}
       <div className="space-y-6">
         {posts.map((post) => (
           <div key={post._id} className="bg-white shadow-md p-4 rounded-lg">
@@ -45,4 +49,5 @@ function postList () {
     </div>
   );
 }
+
 export default PostList;
